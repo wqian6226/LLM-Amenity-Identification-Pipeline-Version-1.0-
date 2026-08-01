@@ -221,8 +221,8 @@ Each amenity follows an Identification Protocol specifying
 | Amenity taxonomy | ✓ Completed |
 | Development sample | ✓ Completed |
 | Text cleaning | ✓ Completed |
-| Prompt Version 1.0 | ✓ Completed |
-| Batch inference code | ✓ Completed |
+| Prompt Version 1.0 | ☐ In progress |
+| Batch inference code | ☐ In progress |
 | Prompt validation | ☐ In progress |
 | Prompt refinement | ☐ Planned |
 | Full-sample annotation | ☐ Planned |
