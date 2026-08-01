@@ -1,43 +1,53 @@
-# Pricing Job Amenities
+# LLM-Amenity-Identification-Pipeline (Version 1.0)
 
-## Project Overview
+Author: Qian Wan
 
-This project develops a large-scale measure of job amenities using Chinese online job advertisements. The objective is to construct economically meaningful amenity variables that can be used to estimate compensating wage differentials.
+Project: Pricing Job Amenities
 
-Unlike existing studies relying solely on structured benefit fields, this project combines structured recruitment information with Large Language Models (LLMs) to identify both explicit and implicit job amenities contained in job descriptions.
+Last Updated: August 2026
 
-The workflow follows the principles discussed with the research team (Alex Bell, Lars Lefgren, and Shuaizhang Feng): taxonomy development → text preprocessing → prompt engineering → small-sample validation → large-scale extraction.
+---
+
+# Project Overview
+
+This repository contains the first version of the LLM-based pipeline for identifying job amenities from Chinese online job advertisements.
+
+The project aims to construct economically meaningful non-wage job amenities by combining:
+
+- structured recruitment information,
+- cleaned Chinese job descriptions,
+- Large Language Models (LLMs).
+
+The pipeline follows the development strategy discussed with Alex Bell, Lars Lefgren, and Shuaizhang Feng:
+
+> Amenity Taxonomy → Purposeful Sampling → Text Cleaning → Prompt Development → LLM Annotation
+
+Rather than applying the LLM directly to the full dataset, Version 1.0 focuses on developing and validating the complete workflow using a manually selected development sample.
 
 ---
 
 # Project Structure
 
 ```
-Pricing Job Amenities
+LLM-Amenity-Identification-Pipeline-Version-1.0
 │
-├── data/
-│   ├── raw/
-│   ├── cleaned/
-│   └── llm_output/
+├── 1. clean_job_description_v1.py
+│      Text preprocessing pipeline
 │
-├── code/
-│   ├── 01_text_cleaning.py
-│   ├── 02_prompt_development.py
-│   ├── 03_llm_annotation.py
-│   ├── 04_post_processing.py
-│   └── utils.py
+├── 2. prompt_v1.txt
+│      Prompt for LLM-based amenity identification
 │
-├── prompt/
-│   ├── system_prompt.md
-│   └── user_prompt.md
+├── 3. run_llm_batch.py
+│      Batch inference script
 │
-├── taxonomy/
-│   ├── amenity_taxonomy.xlsx
-│   └── identification_protocol.pdf
+├── 4. Amenity Taxonomy Proposal.xlsx
+│      Amenity taxonomy and definitions
 │
-├── sample/
-│   ├── analysis_subsample.xlsx
-│   └── analysis_subsample_clean.xlsx
+├── analysis_subsample.xlsx
+│      Raw development sample
+│
+├── analysis_subsample_clean.xlsx
+│      Cleaned sample used for LLM input
 │
 └── README.md
 ```
@@ -46,96 +56,126 @@ Pricing Job Amenities
 
 # Research Workflow
 
-The project consists of five stages.
+## Step 1. Amenity Taxonomy
 
-## Stage 1. Amenity Taxonomy
+Develop an economically motivated taxonomy of job amenities based on:
 
-Develop an economically motivated amenity taxonomy based on the labor economics literature and characteristics of Chinese recruitment advertisements.
+- labor economics literature;
+- characteristics of Chinese online recruitment advertisements.
 
-The taxonomy contains
+Each amenity includes:
 
-- Broad amenity category
+- Broad category
 - Amenity dimension
 - Specific amenity
-- Definition
+- Economic definition
 - Identification source
 
----
+The taxonomy is documented in:
 
-## Stage 2. Purposeful Sampling
-
-Construct a small development sample for prompt engineering.
-
-The sample contains approximately 300 job advertisements selected to cover all amenity categories.
-
-Sampling combines
-
-- occupation-driven sampling
-- text-driven sampling
-
-to ensure sufficient coverage of relatively rare amenities.
+```
+Amenity Taxonomy Proposal.xlsx
+```
 
 ---
 
-## Stage 3. Text Cleaning
+## Step 2. Development Sample
 
-Chinese job descriptions are preprocessed before entering the LLM.
+A purposeful sample of job advertisements was constructed for prompt development.
 
-Main cleaning steps include
+The sample was designed to ensure sufficient coverage of all amenity categories, including relatively uncommon amenities such as
 
-- removing HTML tags
-- decoding HTML entities
-- removing webpage artifacts
-- repairing broken numbers
+- Permanent contract
+- Long-term employment
+- Promotion opportunities
+- Skill development
+- Training
+
+The development sample contains both raw and cleaned versions.
+
+```
+analysis_subsample.xlsx
+analysis_subsample_clean.xlsx
+```
+
+---
+
+## Step 3. Text Cleaning
+
+Chinese job descriptions were cleaned before entering the LLM.
+
+The preprocessing script removes webpage noise while preserving economically meaningful information.
+
+Main cleaning procedures include
+
+- HTML decoding
+- HTML tag removal
+- webpage artifact removal
 - repairing broken Chinese text
-- normalizing punctuation
-- removing duplicated English descriptions
-- generating LLM-ready text
+- repairing broken numbers
+- punctuation normalization
+- duplicated English description removal
+- formatting normalization
 
-The cleaned text is stored in
+The final LLM input is stored in
 
 ```
 jobdes_llm
 ```
 
----
+Script:
 
-## Stage 4. Prompt Development
-
-Prompts are developed using the cleaned development sample.
-
-Following the recommendations from the research team, prompt development is fully documented.
-
-For each prompt version we record
-
-- prompt text
-- model
-- temperature
-- output format
-- ambiguous cases
-- revisions
-
-The first development sample is used only for prompt refinement rather than final estimation.
+```
+1. clean_job_description_v1.py
+```
 
 ---
 
-## Stage 5. Large-scale Amenity Extraction
+## Step 4. Prompt Development
 
-After the prompt reaches satisfactory consistency, it is applied to the full recruitment dataset.
+Prompt engineering is performed using the cleaned development sample.
 
-Each job posting is classified into multiple amenity dimensions.
+The objective is to translate economic definitions into explicit annotation rules that can be consistently followed by the LLM.
+
+Prompt Version 1.0 is stored in
+
+```
+2. prompt_v1.txt
+```
+
+Future versions will be documented separately.
 
 ---
 
-# Amenity Identification
+## Step 5. LLM Annotation
 
-Amenities are identified using two sources.
+The cleaned job descriptions are submitted to the LLM in batches.
 
-## 1. Structured Recruitment Fields
+Each posting is evaluated against the predefined amenity taxonomy.
 
-Used when the information is explicitly provided.
+Outputs include
 
-Examples
+- amenity classifications
+- explanations
+- confidence (if requested)
+
+Script:
+
+```
+3. run_llm_batch.py
+```
+
+---
+
+# Amenity Identification Strategy
+
+Amenities are identified from two complementary information sources.
+
+## 1. Structured Recruitment Information
+
+Used when amenities are explicitly provided.
+
+Examples include
 
 - Social security
 - Housing fund
@@ -147,7 +187,7 @@ Examples
 
 ## 2. Large Language Model (LLM)
 
-Used for amenities embedded in free-text job descriptions.
+Used when amenities are embedded in free-text job descriptions.
 
 Examples include
 
@@ -166,43 +206,67 @@ Examples include
 - Promotion opportunities
 - Skill development
 
-Each amenity follows a separate Identification Protocol specifying
+Each amenity follows an Identification Protocol specifying
 
 - economic definition
 - decision rules
 - boundary cases
-- examples
+
+---
+
+# Current Pipeline Status
+
+| Stage | Status |
+|---------|--------|
+| Amenity taxonomy | ✓ Completed |
+| Development sample | ✓ Completed |
+| Text cleaning | ✓ Completed |
+| Prompt Version 1.0 | ✓ Completed |
+| Batch inference code | ✓ Completed |
+| Prompt validation | ☐ In progress |
+| Prompt refinement | ☐ Planned |
+| Full-sample annotation | ☐ Planned |
 
 ---
 
 # Notes
 
-JAAT is not used in this project.
+## JAAT
 
-Although JAAT can generate O*NET occupation codes and task statements, it currently only supports English job postings. Because the recruitment dataset contains millions of Chinese job advertisements, translating the entire corpus into English is not practically feasible. Therefore, amenity identification relies on structured recruitment fields together with LLM-based classification of Chinese job descriptions.
+JAAT is not used in this pipeline.
 
----
+Although JAAT can generate occupation codes and O*NET task statements, it currently supports only English job postings.
 
-# Current Status
+Because the recruitment dataset consists of millions of Chinese job advertisements, translating the entire corpus into English is not practically feasible.
 
-- ✓ Amenity taxonomy completed
-- ✓ Development sample constructed
-- ✓ Text cleaning completed
-- □ Prompt engineering
-- □ Small-sample validation
-- □ Large-scale LLM extraction
-- □ Dataset construction
-- □ Econometric analysis
+Therefore, Version 1.0 identifies amenities using
+
+- structured recruitment fields
+- cleaned Chinese job descriptions
+- LLM-based semantic classification.
 
 ---
 
-# Author
+# Future Development
 
-Qian Wan
+Version 2.0 will include
 
-Project:
-Pricing Job Amenities
+- Prompt refinement based on ambiguous cases
+- Identification Protocol documentation
+- Inter-prompt consistency evaluation
+- Full-sample LLM annotation
+- Post-processing and quality control
+
+---
+
+# Citation
+
+This repository was developed as part of the project
+
+**Pricing Job Amenities**
 
 Department of Economics
 
 South China Normal University
+
+2026
